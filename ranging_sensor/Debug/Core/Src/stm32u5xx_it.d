@@ -46,6 +46,12 @@ Core/Src/stm32u5xx_it.o: ../Core/Src/stm32u5xx_it.c ../Core/Inc/main.h \
  ../Drivers/STM32U5xx_HAL_Driver/Inc/stm32u5xx_ll_gpio.h \
  ../Drivers/STM32U5xx_HAL_Driver/Inc/stm32u5xx_ll_dma.h \
  ../Drivers/STM32U5xx_HAL_Driver/Inc/stm32u5xx_ll_exti.h \
+ ../Drivers/BSP/b_u585i_iot02a_ranging_sensor.h \
+ ../Drivers/BSP/b_u585i_iot02a_errno.h \
+ ../Drivers/BSP/b_u585i_iot02a_conf.h ../Drivers/BSP/ranging_sensor.h \
+ ../Drivers/BSP/vl53l5cx.h ../Drivers/BSP/vl53l5cx_api.h \
+ ../Drivers/BSP/platform.h ../Drivers/BSP/vl53l5cx_plugin_xtalk.h \
+ ../Drivers/BSP/vl53l5cx_plugin_detection_thresholds.h \
  ../Core/Inc/stm32u5xx_it.h
 ../Core/Inc/main.h:
 ../Drivers/STM32U5xx_HAL_Driver/Inc/stm32u5xx_hal.h:
@@ -95,4 +101,13 @@ Core/Src/stm32u5xx_it.o: ../Core/Src/stm32u5xx_it.c ../Core/Inc/main.h \
 ../Drivers/STM32U5xx_HAL_Driver/Inc/stm32u5xx_ll_gpio.h:
 ../Drivers/STM32U5xx_HAL_Driver/Inc/stm32u5xx_ll_dma.h:
 ../Drivers/STM32U5xx_HAL_Driver/Inc/stm32u5xx_ll_exti.h:
+../Drivers/BSP/b_u585i_iot02a_ranging_sensor.h:
+../Drivers/BSP/b_u585i_iot02a_errno.h:
+../Drivers/BSP/b_u585i_iot02a_conf.h:
+../Drivers/BSP/ranging_sensor.h:
+../Drivers/BSP/vl53l5cx.h:
+../Drivers/BSP/vl53l5cx_api.h:
+../Drivers/BSP/platform.h:
+../Drivers/BSP/vl53l5cx_plugin_xtalk.h:
+../Drivers/BSP/vl53l5cx_plugin_detection_thresholds.h:
 ../Core/Inc/stm32u5xx_it.h:

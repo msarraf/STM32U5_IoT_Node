@@ -57,7 +57,12 @@ UART_HandleTypeDef huart1;
 PCD_HandleTypeDef hpcd_USB_OTG_FS;
 
 /* USER CODE BEGIN PV */
+/* Private define ------------------------------------------------------------*/
+#define POLLING_PERIOD (250U) /* milliseconds */
 
+/* Private variables ---------------------------------------------------------*/
+static RANGING_SENSOR_Capabilities_t Cap;
+static RANGING_SENSOR_ProfileConfig_t Profile;
 /* USER CODE END PV */
 
 /* Private function prototypes -----------------------------------------------*/
@@ -75,9 +80,11 @@ static void MX_UART4_Init(void);
 static void MX_USART1_UART_Init(void);
 static void MX_UCPD1_Init(void);
 static void MX_USB_OTG_FS_PCD_Init(void);
-
+static void Ranging_sensor_Init(void);
+static int32_t raning_sensor_get_distance(RANGING_SENSOR_Result_t *distance);
+static void ranging_uart(RANGING_SENSOR_Result_t *Result);
 /* USER CODE BEGIN PFP */
-static int32_t BSP_RANGING_SENSOR_Init(uint32_t Instance);
+int32_t BSP_I2C2_Init(void);
 /* USER CODE END PFP */
 
 /* Private user code ---------------------------------------------------------*/
@@ -127,34 +134,70 @@ int main(void)
   MX_USART1_UART_Init();
   MX_UCPD1_Init();
   MX_USB_OTG_FS_PCD_Init();
+  Ranging_sensor_Init();
   /* USER CODE BEGIN 2 */
-
+  RANGING_SENSOR_Result_t   DISTANCE;
+  int32_t RESULT;
+  HAL_GPIO_WritePin(LED_PORT [LED7], (uint16_t)LED_PIN [LED7], GPIO_PIN_SET);
+  HAL_GPIO_WritePin(LED_PORT [LED6], (uint16_t)LED_PIN [LED6], GPIO_PIN_SET);
   /* USER CODE END 2 */
 
   /* Infinite loop */
   /* USER CODE BEGIN WHILE */
   while (1)
   {
-	  HAL_GPIO_WritePin(LED_PORT [LED7], (uint16_t)LED_PIN [LED7], GPIO_PIN_RESET);
+	  RESULT = 0;
+
+
 	  HAL_Delay(1000);
 	  HAL_GPIO_TogglePin(LED_PORT[LED7], (uint16_t)LED_PIN[LED7]);
 	  HAL_Delay(1000);
-	  char *message = "Hello, world!\r\n";
-	  HAL_UART_Transmit(&huart1, (uint8_t*)message, 20, HAL_MAX_DELAY);
-	  HAL_Delay(1000);
-	  BSP_RANGING_SENSOR_Init(VL53L5A1_DEV_CENTER);
+	  char *message = "START!\r\n";
+	  HAL_UART_Transmit(&huart1, (uint8_t*)message, strlen(message), HAL_MAX_DELAY);
+	  //HAL_Delay(1000);
+	  //RANGING_SENSOR_Init(VL53L5A1_DEV_CENTER);
+	  RESULT = raning_sensor_get_distance(&DISTANCE);
+	  if(RESULT != 0) HAL_GPIO_TogglePin(LED_PORT[LED6], (uint16_t)LED_PIN[LED6]);
+	  HAL_Delay(POLLING_PERIOD);
+	  ranging_uart(&DISTANCE);
+
+
   }
 
 }
 
-static int32_t BSP_RANGING_SENSOR_Init(uint32_t Instance)
+static void ranging_uart(RANGING_SENSOR_Result_t *Result)
 {
-   int32_t ret;
-  (void)vl53l5cx_i2c_recover();
-   ret = VL53L5CX_Probe(Instance);
-   return ret;
-}
+  char *error_message = "None\r\n";
+  uint32_t distance;
+  uint32_t status;
+  char distance_str[20];
+  char status_str[20];
 
+  for (int8_t j = 0; j < Result->NumberOfZones; j += 8)
+  {
+
+	for (int8_t l = 0; l < RANGING_SENSOR_NB_TARGET_PER_ZONE; l++)
+	{
+	  /* Print distance and status */
+	  for (int8_t k = (8 - 1); k >= 0; k--)
+	  {
+		if (Result->ZoneResult[j+k].NumberOfTargets > 0)
+		{
+			distance = Result->ZoneResult[j+k].Distance[l];
+		    status = Result->ZoneResult[j+k].Status[l];
+	        sprintf(distance_str, "%lu\r\n", distance);
+	        sprintf(status_str, "%lu\r\n", status);
+	        HAL_UART_Transmit(&huart1, (uint8_t*)distance_str, strlen(distance_str), HAL_MAX_DELAY);
+	        HAL_UART_Transmit(&huart1, (uint8_t*)status_str, strlen(status_str), HAL_MAX_DELAY);
+		    //HAL_UART_Transmit(&huart1, (uint8_t*)message, 20, HAL_MAX_DELAY);
+	    }
+		else
+			HAL_UART_Transmit(&huart1, (uint8_t*)error_message, strlen(error_message), HAL_MAX_DELAY);
+	  }
+	}
+  }
+}
 
 
 
@@ -237,6 +280,35 @@ static void SystemPower_Config(void)
   * @param None
   * @retval None
   */
+
+static void Ranging_sensor_Init(void)
+{
+  int32_t                   result  = 0;
+  uint32_t                  chipId;
+
+  if (BSP_RANGING_SENSOR_Init(VL53L5A1_DEV_CENTER) != BSP_ERROR_NONE) result--;
+  if (BSP_RANGING_SENSOR_ReadID(VL53L5A1_DEV_CENTER, &chipId) != BSP_ERROR_NONE) result--;
+  if (BSP_RANGING_SENSOR_GetCapabilities(VL53L5A1_DEV_CENTER, &Cap) != BSP_ERROR_NONE) result--;
+
+  Profile.RangingProfile = RS_PROFILE_4x4_CONTINUOUS;
+  Profile.TimingBudget = 30; /* 5 ms < TimingBudget < 100 ms */
+  Profile.Frequency = 5; /* Hz */
+  Profile.EnableAmbient = 0; /* Enable: 1, Disable: 0 */
+  Profile.EnableSignal = 0; /* Enable: 1, Disable: 0 */
+
+  /* set the profile if different from default one */
+  if (BSP_RANGING_SENSOR_ConfigProfile(VL53L5A1_DEV_CENTER, &Profile) != BSP_ERROR_NONE) result--;
+  if (BSP_RANGING_SENSOR_Start(VL53L5A1_DEV_CENTER, RS_MODE_BLOCKING_CONTINUOUS) != BSP_ERROR_NONE)  result--;
+
+}
+
+static int32_t raning_sensor_get_distance(RANGING_SENSOR_Result_t *distance)
+{
+  int32_t result  = 0;
+  if (BSP_RANGING_SENSOR_GetDistance(VL53L5A1_DEV_CENTER, distance) != BSP_ERROR_NONE) result--;
+  return result;
+}
+
 static void MX_ADF1_Init(void)
 {
 

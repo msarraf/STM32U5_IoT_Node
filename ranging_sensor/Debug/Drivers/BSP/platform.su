@@ -1,0 +1,6 @@
+../Drivers/BSP/platform.c:21:9:RdByte	32	static
+../Drivers/BSP/platform.c:29:9:WrByte	24	static
+../Drivers/BSP/platform.c:37:9:WrMulti	32	static
+../Drivers/BSP/platform.c:46:9:RdMulti	32	static
+../Drivers/BSP/platform.c:55:6:SwapBuffer	24	static
+../Drivers/BSP/platform.c:74:9:WaitMs	24	static

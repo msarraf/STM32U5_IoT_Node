@@ -24,5 +24,6 @@ C_DEPS :=
 SUBDIRS := \
 Core/Src \
 Core/Startup \
+Drivers/BSP \
 Drivers/STM32U5xx_HAL_Driver/Src \
 

@@ -39,7 +39,7 @@ extern "C" {
 #include "stm32u5xx_ll_dma.h"
 
 #include "stm32u5xx_ll_exti.h"
-
+#include "b_u585i_iot02a_ranging_sensor.h"
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
 
@@ -193,6 +193,13 @@ void Error_Handler(void);
 
 /* USER CODE BEGIN Private defines */
 #define VL53L5A1_DEV_CENTER    (1U)
+#define VL53L5A1_LP_PIN        GPIO_PIN_1
+#define VL53L5A1_LP_PORT       GPIOH
+#define BUS_I2C2_SCL_PIN                       GPIO_PIN_4
+#define BUS_I2C2_SCL_GPIO_PORT                 GPIOH
+#define BUS_I2C2_SDA_PIN                       GPIO_PIN_5
+#define BUS_I2C2_SDA_GPIO_PORT                 GPIOH
+
 /* USER CODE END Private defines */
 
 #ifdef __cplusplus
