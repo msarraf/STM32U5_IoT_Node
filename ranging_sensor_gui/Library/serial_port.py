@@ -1,24 +1,22 @@
 import serial
 
-# Open the serial port
-ser = serial.Serial('COM4', baudrate=115200)  # Change 'COM1' to your serial port
+def ranging_sensor_data(port: str, baudrate: int) -> str:
+    """
+    Read ranging sensor data based on the port data. START indicate each pack of data.
 
-# Read from the serial port until "START" is encountered
-data = ""
-while True:
-    # Read a line from the serial port
-    line = ser.readline().decode().strip()  # Decode bytes to string and remove whitespace
-    print(line)
-    # Check if "START" is encountered
-    if line == "START!":
-        break
 
-    # Otherwise, append the line to the data
-    data += line + "\n"
+    """
+    ser = serial.Serial(port=port, baudrate=baudrate)  
 
-# Close the serial port
-ser.close()
+    data = ""
 
-# Print the received data
-print("Received data:")
-print(data)
+    while True:
+        
+        line = ser.readline().decode().strip()  
+        if line == "START!":
+            break
+        data += line + "\n"
+
+    ser.close()
+
+    return data
