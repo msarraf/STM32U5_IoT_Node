@@ -3,6 +3,7 @@ from PyQt5.QtWidgets import QApplication, QMainWindow, QWidget, QVBoxLayout
 from User_interface.serial_port import SerialWigget
 from User_interface.ranging_sensor_grid import GridWidget
 
+
 class MainWindow(QMainWindow):
     def __init__(self, port, baudrate):
         super().__init__()

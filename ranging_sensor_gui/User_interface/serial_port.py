@@ -2,6 +2,8 @@ from PyQt5.QtCore import QThread, pyqtSignal
 from Library.serial_port import ranging_sensor_data
 from PyQt5.QtWidgets import QWidget, QTextEdit, QVBoxLayout, QPushButton
 from functools import partial
+from Settings.GUI_settings import ERROR_ESTATES
+from typing import Union
 
 class SerialWigget(QWidget):
     def __init__(self, port: str, baudrate: int, grid_upate_method):
@@ -42,9 +44,11 @@ class SerialWigget(QWidget):
         self.text_edit.clear()
 
 
-    def on_data_received(self, data: str):
+    def on_data_received(self, data: str) -> None:
         self.text_edit.append(data)
-        self.grid_widget_update([i for i in range(201)])
+        data_list = str_to_list(data)
+        if data_list != ERROR_ESTATES.SERIAL_ERROR:
+            self.grid_widget_update(data_list)
 
     def closeEvent(self, event):
         self.serial_reader_thread.stop()
@@ -67,4 +71,13 @@ class SerialReaderThread(QThread):
     def stop(self):
         self.is_running = False
 
+def str_to_list(data: str) -> Union[list[int],ERROR_ESTATES.SERIAL_ERROR]:
+    splited_data = data.split()
+    if len(splited_data) >0:
+        ranging_sensor_data = splited_data[::2]
+        ranging_sensor_data = [value.replace('None', '0') for value in ranging_sensor_data]
+        ranging_sensor_data = [int(value) for value in ranging_sensor_data]
+        return ranging_sensor_data
+    else:
+        return ERROR_ESTATES.SERIAL_ERROR
 
