@@ -4,12 +4,13 @@ from PyQt5.QtWidgets import QWidget, QTextEdit, QVBoxLayout, QHBoxLayout, QPushB
 from functools import partial
 from Settings.GUI_settings import ERROR_ESTATES, ERROR_MESSAGE
 from typing import Union
-import serial.tools.list_ports
+from typing import Callable
 
 class SerialWigget(QWidget):
-    def __init__(self, port: str, baudrate: int, grid_upate_method):
+    def __init__(self, port: str, baudrate: int, grid_upate_method: Callable[list[int], None], save_data_update_method: Callable[list[int], None]):
         super().__init__()
         self.grid_widget_update = grid_upate_method
+        self.save_data_update = save_data_update_method
         main_layout = QVBoxLayout()
         serial_info_layout = QVBoxLayout()
         serial_config_layout = QHBoxLayout()
@@ -71,6 +72,7 @@ class SerialWigget(QWidget):
             data_list = str_to_list(data)
             if data_list != ERROR_ESTATES.SERIAL_ERROR:
                 self.grid_widget_update(data_list)
+                self.save_data_update(data_list)
         else:
             self.serial_reader_thread.stop()
             self.button_connect.setStyleSheet("background-color: red; color: white;")

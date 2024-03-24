@@ -14,9 +14,10 @@ class MainWindow(QMainWindow):
 
         self.main_layout = QHBoxLayout(self.central_widget)
 
+        sd_layout = self.save_data_layout()
+        
         rs_layout = self.ranging_sensor_layout(port=port, baudrate=baudrate)
 
-        sd_layout = self.save_data_layout()
 
         self.main_layout.addLayout(rs_layout)
         self.main_layout.addLayout(sd_layout)
@@ -24,14 +25,17 @@ class MainWindow(QMainWindow):
 
     def save_data_layout(self) -> QVBoxLayout:
         sd_layout = QVBoxLayout()
-        save_data_window = SaveWidget()
-        sd_layout.addWidget(save_data_window)
+        self.save_data_window = SaveWidget()
+        sd_layout.addWidget(self.save_data_window)
         return sd_layout
 
     def ranging_sensor_layout(self, port: str, baudrate: int) -> QVBoxLayout:
         ranging_sensor_layout = QVBoxLayout()
         grid_window = GridWidget(grid_rows=4, grid_columns=4)
-        self.serial_port_window = SerialWigget(port=port, baudrate=baudrate, grid_upate_method=grid_window.update_grid)
+        self.serial_port_window = SerialWigget(port=port, baudrate=baudrate, 
+                                               grid_upate_method=grid_window.update_grid, 
+                                               save_data_update_method=self.save_data_window.text_edit_update)
+        
         ranging_sensor_layout.addWidget(self.serial_port_window)
         ranging_sensor_layout.addWidget(grid_window)
         return ranging_sensor_layout
