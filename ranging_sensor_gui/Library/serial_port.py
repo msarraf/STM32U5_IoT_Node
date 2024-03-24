@@ -1,4 +1,5 @@
 import serial
+from Settings.GUI_settings import ERROR_MESSAGE
 
 def ranging_sensor_data(port: str, baudrate: int) -> str:
     """
@@ -6,17 +7,21 @@ def ranging_sensor_data(port: str, baudrate: int) -> str:
 
 
     """
-    ser = serial.Serial(port=port, baudrate=baudrate)  
+    try:
+        ser = serial.Serial(port=port, baudrate=baudrate)  
 
-    data = ""
+        data = ""
 
-    while True:
-        
-        line = ser.readline().decode().strip()  
-        if line == "START!":
-            break
-        data += line + "\n"
+        while True:
+            
+            line = ser.readline().decode().strip()  
+            if line == "START!":
+                break
+            data += line + "\n"
 
-    ser.close()
+        ser.close()
 
-    return data
+        return data
+    
+    except serial.serialutil.SerialException:
+        return ERROR_MESSAGE.SERIAL_ERROR_MESSSAGE
