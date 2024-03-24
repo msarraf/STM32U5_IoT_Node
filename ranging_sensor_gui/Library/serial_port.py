@@ -8,20 +8,21 @@ def ranging_sensor_data(port: str, baudrate: int) -> str:
 
     """
     try:
-        ser = serial.Serial(port=port, baudrate=baudrate)  
+        ser = serial.Serial(port=port, baudrate=baudrate, timeout=0.2)  
 
         data = ""
-
         while True:
-            
-            line = ser.readline().decode().strip()  
-            if line == "START!":
+            line = ser.readline().decode().strip() 
+            if line:
+                if line == "START!":
+                    break
+                data += line + "\n"
+            else:
                 break
-            data += line + "\n"
-
         ser.close()
 
         return data
     
-    except serial.serialutil.SerialException:
+    except serial.serialutil.SerialException as e:
+        print(f"Error: {e}")
         return ERROR_MESSAGE.SERIAL_ERROR_MESSSAGE
