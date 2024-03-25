@@ -1,6 +1,6 @@
 import serial
 from Settings.GUI_settings import ERROR_MESSAGE
-
+import logging
 def ranging_sensor_data(port: str, baudrate: int) -> str:
     """
     Read ranging sensor data based on the port data. START indicate each pack of data.
@@ -25,4 +25,5 @@ def ranging_sensor_data(port: str, baudrate: int) -> str:
     
     except serial.serialutil.SerialException as e:
         print(f"Error: {e}")
+        logging.error(ERROR_MESSAGE.SERIAL_ERROR_MESSSAGE)
         return ERROR_MESSAGE.SERIAL_ERROR_MESSSAGE

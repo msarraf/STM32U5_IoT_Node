@@ -3,6 +3,7 @@ from PyQt5.QtWidgets import QApplication, QMainWindow, QWidget, QVBoxLayout, QHB
 from User_interface.serial_port import SerialWigget
 from User_interface.ranging_sensor_grid import GridWidget
 from User_interface.save_data import SaveWidget
+import logging
 
 
 class MainWindow(QMainWindow):
@@ -46,6 +47,10 @@ class MainWindow(QMainWindow):
         super().closeEvent(event)
 
 if __name__ == "__main__":
+    logging.basicConfig(level=logging.DEBUG,
+                        format="%(asctime)s %(levelname)s %(message)s",
+                        datefmt="%Y-%m-%d %H:%M:%S",
+                        filename="basic.log")
     app = QApplication(sys.argv)
 
     main_window = MainWindow(port='COM4', baudrate=115200)
