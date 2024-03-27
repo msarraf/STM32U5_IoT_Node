@@ -4,10 +4,9 @@ from PyQt5.QtWidgets import QWidget, QTextEdit, QVBoxLayout, QHBoxLayout, QPushB
 from functools import partial
 from Settings.GUI_settings import ERROR_ESTATES, ERROR_MESSAGE
 from typing import Union
-from typing import Callable
 
 class SerialWigget(QWidget):
-    def __init__(self, port: str, baudrate: int, grid_upate_method: Callable[list[int], None], save_data_update_method: Callable[list[int], None]):
+    def __init__(self, port: str, baudrate: int, grid_upate_method, save_data_update_method):
         super().__init__()
         self.grid_widget_update = grid_upate_method
         self.save_data_update = save_data_update_method
