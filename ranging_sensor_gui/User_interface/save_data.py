@@ -1,5 +1,5 @@
 from Library.serial_port import ranging_sensor_data
-from PyQt5.QtWidgets import QWidget, QTextEdit, QVBoxLayout, QPushButton
+from PyQt5.QtWidgets import QWidget, QTextEdit, QVBoxLayout, QPushButton, QMessageBox
 from PyQt5.QtCore import QThread, pyqtSignal
 from utils.utils import save_data_to_csv
 from datasets.RangingSensor import RangingData
@@ -28,8 +28,11 @@ class SaveWidget(QWidget):
         self.save_data_thread.saved_data.connect(self.on_data_saved)
 
     def on_save_button_clicked(self):
+        if not self.ranging_data:
+            QMessageBox.warning(self, "Warning", "No data to save!")
+            return
         self.save_data_thread.set_data(self.ranging_data)
-        self.save_data_thread.run()
+        self.save_data_thread.start()
 
     def on_cl_button_clicked(self):
         self.ranging_data = []
