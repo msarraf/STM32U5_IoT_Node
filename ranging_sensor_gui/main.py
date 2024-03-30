@@ -51,6 +51,17 @@ if __name__ == "__main__":
                         format="%(asctime)s %(levelname)s %(message)s",
                         datefmt="%Y-%m-%d %H:%M:%S",
                         filename="basic.log")
+    
+    console = logging.StreamHandler()
+    console.setLevel(logging.DEBUG)  # Set the console log level
+
+    # Create a formatter and set it on the console handler
+    formatter = logging.Formatter('%(asctime)s - %(levelname)s - %(message)s')
+    console.setFormatter(formatter)
+
+    # Add the console handler to the root logger
+    logging.getLogger('').addHandler(console)
+
     app = QApplication(sys.argv)
 
     main_window = MainWindow(port='COM4', baudrate=115200)
