@@ -24,6 +24,6 @@ def ranging_sensor_data(port: str, baudrate: int) -> str:
         return data
     
     except serial.serialutil.SerialException as e:
-        print(f"Error: {e}")
         logging.error(ERROR_MESSAGE.SERIAL_ERROR_MESSSAGE)
+        logging.error(e)
         return ERROR_MESSAGE.SERIAL_ERROR_MESSSAGE
